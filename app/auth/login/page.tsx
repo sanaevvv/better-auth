@@ -1,3 +1,5 @@
+'use client'
+
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   Card,
@@ -9,8 +11,20 @@ import {
 import { Separator } from "@/components/ui/separator";
 import SignUpTab from "./_components/sign-up-tab";
 import SignInTab from "./_components/sign-in-tab";
+import SocialAuthButtons from "./_components/social-auth-buttons";
+import { useEffect } from "react";
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
+  const router = useRouter();
+  useEffect(() => {
+    authClient.getSession().then((session) => {
+      if (session != null) {
+        router.push("/")
+      }
+    })
+  }, [router])
   return <Tabs defaultValue="signin" className="max-w-auto my-6 px-4">
  <TabsList>
           <TabsTrigger value="signin">ログイン</TabsTrigger>
@@ -30,10 +44,10 @@ export default function LoginPage() {
           </CardContent>
 
           <Separator />
-{/*
+
           <CardFooter className="grid grid-cols-2 gap-3">
             <SocialAuthButtons />
-          </CardFooter> */}
+          </CardFooter>
         </Card>
     </TabsContent>
 
@@ -51,9 +65,9 @@ export default function LoginPage() {
 
           <Separator />
 
-          {/* <CardFooter className="grid grid-cols-2 gap-3">
+          <CardFooter className="grid grid-cols-2 gap-3">
             <SocialAuthButtons />
-          </CardFooter> */}
+          </CardFooter>
         </Card>
       </TabsContent>
   </Tabs>
