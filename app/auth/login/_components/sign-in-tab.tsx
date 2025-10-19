@@ -41,30 +41,14 @@ const SignInTab = () => {
   const handleSignIn = async (data: SignInForm) => {
     await authClient.signIn.email({ ...data, callbackURL: "/" }, {
       onSuccess: () => {
-        toast.success("新規登録が成功しました")
         router.push("/")
       },
-      onError: (error) => {
-        const errorMessage = error.error.message;
-
-        let japaneseMessage = "新規登録に失敗しました";
-
-        switch (errorMessage) {
-          case "Email already exists":
-            japaneseMessage = "このメールアドレスは既に使用されています";
-            break;
-          case "Invalid email format":
-            japaneseMessage = "メールアドレスの形式が正しくありません";
-            break;
-          case "Password too short":
-            japaneseMessage = "パスワードが短すぎます";
-            break;
-          default:
-            japaneseMessage = "新規登録に失敗しました";
-        }
-
-        toast.error(japaneseMessage);
-      }
+      onError: error => {
+        // if (error.error.code === "EMAIL_NOT_VERIFIED") {
+        //   openEmailVerificationTab(data.email)
+        // }
+        toast.error(error.error.message || "ログインに失敗しました")
+      },
     });
   }
 
