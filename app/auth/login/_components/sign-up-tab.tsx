@@ -27,6 +27,15 @@ const signUpSchema = z.object({
 
 type SignUpForm = z.infer<typeof signUpSchema>
 
+// エラーメッセージを日本語に変換する関数
+const getJapaneseErrorMessage = (errorMessage: string): string => {
+  if (errorMessage.includes("User already exists")) return "このメールアドレスは既に使用されています";
+  if (errorMessage.includes("Invalid email")) return "メールアドレスの形式が正しくありません";
+  if (errorMessage.includes("Password too short")) return "パスワードが短すぎます";
+  if (errorMessage.includes("validation")) return "入力内容に問題があります";
+  return "新規登録に失敗しました";
+};
+
 const SignUpTab = () => {
   const router = useRouter();
   const form = useForm<SignUpForm>({
@@ -48,24 +57,8 @@ const SignUpTab = () => {
       },
       onError: (error) => {
         const errorMessage = error.error.message;
-
-        let japaneseMessage = "新規登録に失敗しました";
-
-        switch (errorMessage) {
-          case "Email already exists":
-            japaneseMessage = "このメールアドレスは既に使用されています";
-            break;
-          case "Invalid email format":
-            japaneseMessage = "メールアドレスの形式が正しくありません";
-            break;
-          case "Password too short":
-            japaneseMessage = "パスワードが短すぎます";
-            break;
-          default:
-            japaneseMessage = "新規登録に失敗しました";
-        }
-
-        toast.error(japaneseMessage);
+        console.log(errorMessage);
+        toast.error(getJapaneseErrorMessage(errorMessage));
       }
     });
   }

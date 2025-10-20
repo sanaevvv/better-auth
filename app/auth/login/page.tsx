@@ -21,10 +21,11 @@ export default function LoginPage() {
   useEffect(() => {
     authClient.getSession().then((session) => {
       if (session != null) {
-        router.push("/")
+        router.push("/auth/login")
       }
     })
   }, [router])
+
   return <Tabs defaultValue="signin" className="max-w-auto my-6 px-4">
  <TabsList>
           <TabsTrigger value="signin">ログイン</TabsTrigger>
