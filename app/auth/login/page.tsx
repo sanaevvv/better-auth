@@ -12,35 +12,49 @@ import { Separator } from "@/components/ui/separator";
 import SignUpTab from "./_components/sign-up-tab";
 import SignInTab from "./_components/sign-in-tab";
 import SocialAuthButtons from "./_components/social-auth-buttons";
-import { useEffect } from "react";
-import { authClient } from "@/lib/auth-client";
+import { useEffect, useState } from "react";
+import { authClient } from "@/lib/auth/auth-client";
 import { useRouter } from "next/navigation";
+import { EmailVerification } from "./_components/email-verification";
+import { ForgotPassword } from "./_components/forgot-password";
 
+type Tab="signin" | "signup" | "email-verification" | "forgot-password"
 export default function LoginPage() {
   const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [selectedTab, setSelectedTab] = useState<Tab>("signin");
+
   useEffect(() => {
     authClient.getSession().then((session) => {
-      if (session != null) {
-        router.push("/auth/login")
+      if (session.data != null) {
+        router.push("/")
       }
     })
   }, [router])
 
-  return <Tabs defaultValue="signin" className="max-w-auto my-6 px-4">
- <TabsList>
+  function openEmailVerificationTab(email: string) {
+    setEmail(email)
+    setSelectedTab("email-verification")
+  }
+
+  return (
+    <Tabs value={selectedTab} onValueChange={t => setSelectedTab(t as Tab)} className="max-w-auto my-6 px-4">
+
+      {(selectedTab === "signin" || selectedTab === "signup") && (
+        <TabsList>
           <TabsTrigger value="signin">ログイン</TabsTrigger>
           <TabsTrigger value="signup">新規登録</TabsTrigger>
-    </TabsList>
+        </TabsList>
+      )}
       <TabsContent value="signin">
         <Card>
           <CardHeader className="text-2xl">
             <CardTitle>ログイン</CardTitle>
           </CardHeader>
-        <CardContent>
-          {/* ログインフォームをここに配置 */}
+          <CardContent>
             <SignInTab
-              // openEmailVerificationTab={openEmailVerificationTab}
-              // openForgotPassword={() => setSelectedTab("forgot-password")}
+              openEmailVerificationTab={openEmailVerificationTab}
+              openForgotPassword={() => setSelectedTab("forgot-password")}
             />
           </CardContent>
 
@@ -50,18 +64,17 @@ export default function LoginPage() {
             <SocialAuthButtons />
           </CardFooter>
         </Card>
-    </TabsContent>
+      </TabsContent>
 
-     <TabsContent value="signup">
+      <TabsContent value="signup">
         <Card>
           <CardHeader className="text-2xl">
             <CardTitle>新規登録</CardTitle>
           </CardHeader>
-        <CardContent>
-          {/* 新規登録フォームをここに配置 */}
-          <SignUpTab
-            // penEmailVerificationTab={openEmailVerificationTab}
-          />
+          <CardContent>
+            <SignUpTab
+              openEmailVerificationTab={openEmailVerificationTab}
+            />
           </CardContent>
 
           <Separator />
@@ -71,5 +84,28 @@ export default function LoginPage() {
           </CardFooter>
         </Card>
       </TabsContent>
-  </Tabs>
+
+      <TabsContent value="email-verification">
+        <Card>
+          <CardHeader className="text-2xl font-bold">
+            <CardTitle>メールアドレスを確認してください</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <EmailVerification email={email} />
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+      <TabsContent value="forgot-password">
+        <Card>
+          <CardHeader className="text-2xl font-bold">
+            <CardTitle>パスワード再設定</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ForgotPassword openSignInTab={() => setSelectedTab("signin")} />
+          </CardContent>
+        </Card>
+      </TabsContent>
+    </Tabs>
+  )
 }

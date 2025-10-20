@@ -26,7 +26,13 @@ const signInSchema = z.object({
 
 type SignInForm = z.infer<typeof signInSchema>
 
-const SignInTab = () => {
+const SignInTab = ({
+  openEmailVerificationTab,
+  openForgotPassword
+}: {
+  openEmailVerificationTab: (email: string) => void,
+  openForgotPassword: () => void
+}) => {
   const router = useRouter();
   const form = useForm<SignInForm>({
     resolver: zodResolver(signInSchema),
@@ -44,9 +50,9 @@ const SignInTab = () => {
         router.push("/")
       },
       onError: error => {
-        // if (error.error.code === "EMAIL_NOT_VERIFIED") {
-        //   openEmailVerificationTab(data.email)
-        // }
+        if (error.error.code === "EMAIL_NOT_VERIFIED") {
+          openEmailVerificationTab(data.email)
+        }
         toast.error(error.error.message || "ログインに失敗しました")
       },
     });
@@ -74,9 +80,23 @@ const SignInTab = () => {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>パスワード</FormLabel>
+              <div className="flex justify-between items-center">
+                <FormLabel>パスワード</FormLabel>
+                <Button
+                  onClick={openForgotPassword}
+                  type="button"
+                  variant="link"
+                  size="sm"
+                  className="text-sm font-normal underline"
+                >
+                  パスワードお忘れですか?
+                </Button>
+              </div>
               <FormControl>
-                <PasswordInput {...field} />
+                <PasswordInput
+                  autoComplete="current-password webauthn"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

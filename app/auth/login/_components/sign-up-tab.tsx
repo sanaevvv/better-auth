@@ -15,28 +15,25 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { PasswordInput } from "@/components/ui/password-input"
 import { LoadingSwap } from "@/components/ui/loading-swap"
-import { authClient } from "@/lib/auth-client"
+import { authClient } from "@/lib/auth/auth-client"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import { NumberInput } from "@/components/ui/number-input"
 
 const signUpSchema = z.object({
   name: z.string().min(1, { message: "必須です" }),
   email: z.email().min(1, { message: "必須です" }),
   password: z.string().min(6, { message: "6文字以上で入力してください" }),
+  favoriteNumber: z.number().int()
 })
 
 type SignUpForm = z.infer<typeof signUpSchema>
 
-// エラーメッセージを日本語に変換する関数
-const getJapaneseErrorMessage = (errorMessage: string): string => {
-  if (errorMessage.includes("User already exists")) return "このメールアドレスは既に使用されています";
-  if (errorMessage.includes("Invalid email")) return "メールアドレスの形式が正しくありません";
-  if (errorMessage.includes("Password too short")) return "パスワードが短すぎます";
-  if (errorMessage.includes("validation")) return "入力内容に問題があります";
-  return "新規登録に失敗しました";
-};
-
-const SignUpTab = () => {
+const SignUpTab = ({
+  openEmailVerificationTab
+}: {
+  openEmailVerificationTab: (email: string) => void
+}) => {
   const router = useRouter();
   const form = useForm<SignUpForm>({
     resolver: zodResolver(signUpSchema),
@@ -44,23 +41,29 @@ const SignUpTab = () => {
       name: "",
       email: "",
       password: "",
+      favoriteNumber: undefined,
     },
   })
 
   const { isSubmitting } = form.formState;
 
   const handleSignUp = async (data: SignUpForm) => {
-    await authClient.signUp.email({ ...data, callbackURL: "/" }, {
-      onSuccess: () => {
-        toast.success("新規登録が成功しました")
-        router.push("/")
-      },
-      onError: (error) => {
-        const errorMessage = error.error.message;
-        console.log(errorMessage);
-        toast.error(getJapaneseErrorMessage(errorMessage));
+    const res = await authClient.signUp.email(
+      { ...data, callbackURL: "/" },
+      {
+        onError: (error) => {
+          toast.error(error.error.message);
+        },
+         onSuccess: () => {
+          router.push("/")
+        },
       }
-    });
+    );
+
+    // 成功 + メール未認証 → メール認証タブを開く
+    if (res.error == null && !res.data.user.emailVerified) {
+      openEmailVerificationTab(data.email)
+    }
   }
 
   return (
@@ -108,19 +111,19 @@ const SignUpTab = () => {
           )}
         />
 
-          {/* <FormField
+        <FormField
           control={form.control}
           name="favoriteNumber"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Favorite Number</FormLabel>
+              <FormLabel>好きな数字</FormLabel>
               <FormControl>
                 <NumberInput {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
-        /> */}
+        />
         <Button type="submit" disabled={isSubmitting} className="w-full">
           <LoadingSwap isLoading={isSubmitting}>
             新規登録
