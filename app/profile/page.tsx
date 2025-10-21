@@ -25,6 +25,7 @@ import { ProfileUpdateForm } from './_components/profile_update_form'
 import { ReactNode, Suspense } from 'react'
 import { SetPasswordButton } from './_components/set_password_button'
 import { ChangePasswordForm } from './_components/change-password-form'
+import { SessionManagement } from './_components/session-management'
 
 
 const ProfilePage =async() => {
@@ -106,9 +107,9 @@ const ProfilePage =async() => {
         </TabsContent>
 
         <TabsContent value="sessions">
-          {/* <LoadingSuspense>
+          <LoadingSuspense>
             <SessionsTab currentSessionToken={session.session.token} />
-          </LoadingSuspense> */}
+          </LoadingSuspense>
         </TabsContent>
 
         <TabsContent value="accounts">
@@ -133,6 +134,25 @@ const ProfilePage =async() => {
 }
 
 export default ProfilePage
+
+async function SessionsTab({
+  currentSessionToken,
+}: {
+  currentSessionToken: string
+}) {
+  const sessions = await auth.api.listSessions({ headers: await headers() })
+
+  return (
+    <Card>
+      <CardContent>
+        <SessionManagement
+          sessions={sessions}
+          currentSessionToken={currentSessionToken}
+        />
+      </CardContent>
+    </Card>
+  )
+}
 
 async function SecurityTab({
   email,
