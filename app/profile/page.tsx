@@ -22,6 +22,10 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { ProfileUpdateForm } from './_components/profile_update_form'
+import { ReactNode, Suspense } from 'react'
+import { SetPasswordButton } from './_components/set_password_button'
+import { ChangePasswordForm } from './_components/change-password-form'
+
 
 const ProfilePage =async() => {
   const session = await auth.api.getSession({ headers: await headers() })
@@ -93,12 +97,12 @@ const ProfilePage =async() => {
         </TabsContent>
 
         <TabsContent value="security">
-          {/* <LoadingSuspense>
+          <LoadingSuspense>
             <SecurityTab
               email={session.user.email}
-              isTwoFactorEnabled={session.user.twoFactorEnabled ?? false}
+              // isTwoFactorEnabled={session.user.twoFactorEnabled ?? false}
             />
-          </LoadingSuspense> */}
+          </LoadingSuspense>
         </TabsContent>
 
         <TabsContent value="sessions">
@@ -129,3 +133,81 @@ const ProfilePage =async() => {
 }
 
 export default ProfilePage
+
+async function SecurityTab({
+  email,
+  // isTwoFactorEnabled,
+}: {
+  email: string
+  // isTwoFactorEnabled: boolean
+}) {
+  // const [passkeys, accounts] = await Promise.all([
+  //   // auth.api.listPasskeys({ headers: await headers() }),
+  //   // ユーザーが連携しているOAuthアカウント情報一覧を取得
+  //   auth.api.listUserAccounts({ headers: await headers() }),
+  // ])
+
+  const accounts = await auth.api.listUserAccounts({ headers: await headers() })
+
+  const hasPasswordAccount = accounts.some(a => a.providerId === "credential")
+
+  return (
+    <div className="space-y-6">
+      {hasPasswordAccount ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>パスワード変更</CardTitle>
+            <CardDescription>
+              セキュリティを向上させるためにパスワードを変更してください。
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ChangePasswordForm />
+          </CardContent>
+        </Card>
+      ) : (
+        <Card>
+          <CardHeader>
+            <CardTitle>パスワード設定</CardTitle>
+            <CardDescription>
+              パスワードを設定するためにメールを送信します。
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <SetPasswordButton email={email} />
+          </CardContent>
+        </Card>
+      )}
+      {hasPasswordAccount && (
+        <Card>
+          {/* <CardHeader className="flex items-center justify-between gap-2">
+            <CardTitle>Two-Factor Authentication</CardTitle>
+            <Badge variant={isTwoFactorEnabled ? "default" : "secondary"}>
+              {isTwoFactorEnabled ? "Enabled" : "Disabled"}
+            </Badge>
+          </CardHeader>
+          <CardContent>
+            <TwoFactorAuth isEnabled={isTwoFactorEnabled} />
+          </CardContent> */}
+        </Card>
+      )}
+
+      <Card>
+        <CardHeader>
+          <CardTitle>パスキー管理</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {/* <PasskeyManagement passkeys={passkeys} /> */}
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+function LoadingSuspense({ children }: { children: ReactNode }) {
+  return (
+    <Suspense fallback={<Loader2Icon className="size-20 animate-spin" />}>
+      {children}
+    </Suspense>
+  )
+}
