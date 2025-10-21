@@ -30,9 +30,12 @@ export function ActionButton({
 
   function performAction() {
     startTransition(async () => {
+      // props で渡された action 関数を実行（整形済みの結果を取得）
       const data = await action()
+      // エラーの場合
       if (data.error) {
         toast.error(data.message || "エラーが発生しました。")
+      // 成功で message があれば成功メッセージを表示
       } else if (data.message) {
         toast.success(data.message)
       }
