@@ -27,6 +27,7 @@ import { SetPasswordButton } from './_components/set_password_button'
 import { ChangePasswordForm } from './_components/change-password-form'
 import { SessionManagement } from './_components/session-management'
 import { AccountLinking } from './_components/account-linking'
+import { AccountDeletion } from './_components/account-deletion'
 
 
 const ProfilePage =async() => {
@@ -125,7 +126,7 @@ const ProfilePage =async() => {
               <CardTitle className="text-destructive">Danger Zone</CardTitle>
             </CardHeader>
             <CardContent>
-              {/* <AccountDeletion /> */}
+              <AccountDeletion />
             </CardContent>
           </Card>
         </TabsContent>
