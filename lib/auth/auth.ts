@@ -7,6 +7,7 @@ import sendEmailVerificationEmail from "@/lib/emails/email-verification";
 import { createAuthMiddleware } from "better-auth/api"
 import { sendWelcomeEmail } from "../emails/welcome.email";
 import { sendDeleteAccountVerificationEmail } from "../emails/delete-account-verification";
+import { twoFactor } from "better-auth/plugins/two-factor";
 
 export const auth = betterAuth({
   user: {
@@ -80,6 +81,7 @@ export const auth = betterAuth({
   plugins: [
     //Next.js の cookies() や headers() API と統合
     nextCookies(),
+    twoFactor(),
   ],
   database: drizzleAdapter(db, {
     provider: "pg",

@@ -28,6 +28,7 @@ import { ChangePasswordForm } from './_components/change-password-form'
 import { SessionManagement } from './_components/session-management'
 import { AccountLinking } from './_components/account-linking'
 import { AccountDeletion } from './_components/account-deletion'
+import { TwoFactorAuth } from './_components/two-factor-auth'
 
 
 const ProfilePage =async() => {
@@ -103,7 +104,7 @@ const ProfilePage =async() => {
           <LoadingSuspense>
             <SecurityTab
               email={session.user.email}
-              // isTwoFactorEnabled={session.user.twoFactorEnabled ?? false}
+              isTwoFactorEnabled={session.user.twoFactorEnabled ?? false}
             />
           </LoadingSuspense>
         </TabsContent>
@@ -173,10 +174,10 @@ async function LinkedAccountsTab() {
 
 async function SecurityTab({
   email,
-  // isTwoFactorEnabled,
+  isTwoFactorEnabled,
 }: {
   email: string
-  // isTwoFactorEnabled: boolean
+ isTwoFactorEnabled: boolean
 }) {
   // const [passkeys, accounts] = await Promise.all([
   //   // auth.api.listPasskeys({ headers: await headers() }),
@@ -217,15 +218,15 @@ async function SecurityTab({
       )}
       {hasPasswordAccount && (
         <Card>
-          {/* <CardHeader className="flex items-center justify-between gap-2">
-            <CardTitle>Two-Factor Authentication</CardTitle>
+          <CardHeader className="flex items-center justify-between gap-2">
+            <CardTitle>2段階認証</CardTitle>
             <Badge variant={isTwoFactorEnabled ? "default" : "secondary"}>
               {isTwoFactorEnabled ? "Enabled" : "Disabled"}
             </Badge>
           </CardHeader>
           <CardContent>
             <TwoFactorAuth isEnabled={isTwoFactorEnabled} />
-          </CardContent> */}
+          </CardContent>
         </Card>
       )}
 
