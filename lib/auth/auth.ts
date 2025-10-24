@@ -8,6 +8,9 @@ import { createAuthMiddleware } from "better-auth/api"
 import { sendWelcomeEmail } from "../emails/welcome.email";
 import { sendDeleteAccountVerificationEmail } from "../emails/delete-account-verification";
 import { twoFactor } from "better-auth/plugins/two-factor";
+import { passkey } from "better-auth/plugins/passkey";
+import { admin as adminPlugin } from "better-auth/plugins/admin";
+import { ac, user, admin } from "@/components/auth/permissions";
 
 export const auth = betterAuth({
   user: {
@@ -82,6 +85,14 @@ export const auth = betterAuth({
     //Next.js の cookies() や headers() API と統合
     nextCookies(),
     twoFactor(),
+    passkey(),
+    adminPlugin({
+      ac,
+      roles: {
+        admin,
+        user,
+      }
+    })
   ],
   database: drizzleAdapter(db, {
     provider: "pg",

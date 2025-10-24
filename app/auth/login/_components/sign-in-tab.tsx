@@ -15,9 +15,10 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { PasswordInput } from "@/components/ui/password-input"
 import { LoadingSwap } from "@/components/ui/loading-swap"
-import { authClient } from "@/lib/auth-client"
+import { authClient } from "@/lib/auth/auth-client"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import { PasskeyButton } from "./passkey-button"
 
 const signInSchema = z.object({
   email: z.email().min(1, { message: "必須です" }),
@@ -59,6 +60,7 @@ const SignInTab = ({
   }
 
   return (
+    <div className="space-y-4">
     <Form {...form}>
       <form className="space-y-4" onSubmit={form.handleSubmit(handleSignIn)}>
         <FormField
@@ -68,7 +70,7 @@ const SignInTab = ({
             <FormItem>
               <FormLabel>メールアドレス</FormLabel>
               <FormControl>
-                <Input type="email" {...field} />
+                <Input type="email" autoComplete="email webauthn" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -103,19 +105,6 @@ const SignInTab = ({
           )}
         />
 
-          {/* <FormField
-          control={form.control}
-          name="favoriteNumber"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Favorite Number</FormLabel>
-              <FormControl>
-                <NumberInput {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        /> */}
         <Button type="submit" disabled={isSubmitting} className="w-full">
           <LoadingSwap isLoading={isSubmitting}>
             ログイン
@@ -123,6 +112,8 @@ const SignInTab = ({
         </Button>
       </form>
     </Form>
+     <PasskeyButton />
+  </div>
   )
 }
 

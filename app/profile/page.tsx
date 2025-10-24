@@ -29,6 +29,7 @@ import { SessionManagement } from './_components/session-management'
 import { AccountLinking } from './_components/account-linking'
 import { AccountDeletion } from './_components/account-deletion'
 import { TwoFactorAuth } from './_components/two-factor-auth'
+import { PasskeyManagement } from './_components/passkey-management'
 
 
 const ProfilePage =async() => {
@@ -61,7 +62,7 @@ const ProfilePage =async() => {
               <h1 className="text-3xl font-bold">
                 {session.user.name || "User Profile"}
               </h1>
-              {/* <Badge>{session.user.role}</Badge> */}
+              <Badge>{session.user.role}</Badge>
             </div>
             <p className="text-muted-foreground">{session.user.email}</p>
           </div>
@@ -179,13 +180,11 @@ async function SecurityTab({
   email: string
  isTwoFactorEnabled: boolean
 }) {
-  // const [passkeys, accounts] = await Promise.all([
-  //   // auth.api.listPasskeys({ headers: await headers() }),
-  //   // ユーザーが連携しているOAuthアカウント情報一覧を取得
-  //   auth.api.listUserAccounts({ headers: await headers() }),
-  // ])
-
-  const accounts = await auth.api.listUserAccounts({ headers: await headers() })
+  const [passkeys, accounts] = await Promise.all([
+    auth.api.listPasskeys({ headers: await headers() }),
+    // ユーザーが連携しているOAuthアカウント情報一覧を取得
+    auth.api.listUserAccounts({ headers: await headers() }),
+  ])
 
   const hasPasswordAccount = accounts.some(a => a.providerId === "credential")
 
@@ -235,7 +234,7 @@ async function SecurityTab({
           <CardTitle>パスキー管理</CardTitle>
         </CardHeader>
         <CardContent>
-          {/* <PasskeyManagement passkeys={passkeys} /> */}
+          <PasskeyManagement passkeys={passkeys} />
         </CardContent>
       </Card>
     </div>
