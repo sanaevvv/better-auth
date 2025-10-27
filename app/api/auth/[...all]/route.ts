@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/auth";
 import { toNextJsHandler } from "better-auth/next-js";
 import arcjet, { BotOptions, detectBot, EmailOptions, protectSignup, shield, slidingWindow, SlidingWindowRateLimitOptions, tokenBucket } from "@arcjet/next";
 import { findIp } from "@arcjet/ip";
@@ -15,7 +15,7 @@ const aj = arcjet({
 
 const botSettings = {
   mode: "LIVE",
-  allow: []
+  allow: ["STRIPE_WEBHOOK"]
 } satisfies BotOptions;
 
 const restrictiveRateLimitSettings = {

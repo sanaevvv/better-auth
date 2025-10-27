@@ -6,6 +6,6 @@ export async function sendWelcomeEmail(user: { name: string; email: string }) {
   await sendEmail({
     to: user.email,
     subject: "ご登録ありがとうございます",
-    react: <WelcomeEmailTemplate user={user} />,
+    react: WelcomeEmailTemplate({ user }),
   })
 }

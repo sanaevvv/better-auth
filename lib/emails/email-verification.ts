@@ -14,7 +14,7 @@ const sendEmailVerificationEmail = async ({ user, url }: EmailVerificationData) 
   return await sendEmail({
     to: user.email,
     subject: "Verify your email address",
-    react: <EmailVerificationTemplate user={user} url={url} />
+    react: EmailVerificationTemplate({ user, url })
   });
 };
 

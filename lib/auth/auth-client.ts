@@ -1,7 +1,8 @@
 import { createAuthClient } from "better-auth/react"
-import { inferAdditionalFields, passkeyClient, twoFactorClient, adminClient } from "better-auth/client/plugins";
+import { inferAdditionalFields, passkeyClient, twoFactorClient, adminClient, organizationClient } from "better-auth/client/plugins";
 import { auth } from "./auth";
 import { ac, admin, user } from "@/components/auth/permissions"
+import { stripeClient } from "@better-auth/stripe/client"
 
 export const authClient = createAuthClient({
   plugins: [
@@ -18,6 +19,10 @@ export const authClient = createAuthClient({
         admin,
         user,
       }
+      }),
+    organizationClient(),
+    stripeClient({
+      subscription: true // サブスクリプション管理を有効にする
     })
   ]
 });
